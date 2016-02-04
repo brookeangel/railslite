@@ -18,14 +18,14 @@ class Route
   # instantiate controller and call controller action
 
   def run(req, res)
-    regex = Regexp.new(pattern)
-    match_data = pattern.match(req.fullpath)
-    route_params = {}
+    match_data = pattern.match(req.fullpath) # This creates a hash-like object of matches
+    route_params = {} # Here we put it into a real hash
 
     match_data.names.each do |name|
       route_params[name] = match_data[name]
     end
 
+    # This is where the controller class is actually born
     controller_class.new(req, res, route_params).invoke_action(action_name)
   end
 end
@@ -46,7 +46,8 @@ class Router
   # evaluate the proc in the context of the instance
   # for syntactic sugar :)
   def draw(&proc)
-    self.instance_eval(&proc)
+    # Builds these routes
+    self.instance_eval(&proc) # This just evaluates the proc in the context of the instance
   end
 
   # make each of these methods that

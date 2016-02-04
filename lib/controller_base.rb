@@ -2,7 +2,6 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/inflector'
 require 'erb'
-require 'byebug'
 require_relative './session'
 require_relative './flash'
 require_relative './authenticity_token'
@@ -28,8 +27,7 @@ class ControllerBase
     raise "Already rendered" if already_built_response?
     @already_built_response = true
     res.redirect(url, status = 302)
-    session.store_session(res)
-    # flash.store_flash(res)
+    store_cookies
   end
 
   # Populate the response with content.
@@ -40,17 +38,20 @@ class ControllerBase
     @already_built_response = true
     res['Content-Type'] = content_type
     res.write(content)
-    session.store_session(res)
-    flash.store_flash(res)
+    store_cookies
   end
 
   # use ERB and binding to evaluate templates
   # pass the rendered html to render_content
   def render(template_name)
-    file_name = "views/#{self.class.to_s.underscore}/#{template_name}.html.erb"
+    dir_path = File.dirname(__FILE__)
+    file_name = File.join(
+      dir_path, "..", "views",
+      self.class.to_s.underscore, "#{template_name}.html.erb"
+      )
     contents = File.read(file_name)
-    template = ERB.new(contents)
-    evaluated_template = template.result(binding)
+    template = ERB.new(contents) #Create an erb template
+    evaluated_template = template.result(binding) #Evaluate in context of controller instance vars
     render_content(evaluated_template, 'text/html')
   end
 
@@ -70,11 +71,16 @@ class ControllerBase
   end
 
   def invoke_action(name)
-    self.send(name)
-    render(name) unless already_built_response?
+    self.send(name) #this will invoke the action for the current controller instance
+    render(name) unless already_built_response? #if they don't render we render implicitly
   end
 
   private
+
+  def store_cookies
+    session.store_session(res)
+    flash.store_flash(res)
+  end
 
   def authenticate(req, res, route_params)
     return unless req.post? || req.patch?
