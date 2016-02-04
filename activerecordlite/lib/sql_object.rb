@@ -50,6 +50,8 @@ class SQLObject
   end
 
   def initialize(params = {})
+    self.class.finalize!
+    
     params.each do |key, val|
       raise "unknown attribute '#{key}'" unless self.class.columns.include?(key.to_sym)
       self.send("#{key}=", val)
@@ -93,7 +95,13 @@ class SQLObject
     SQL
   end
 
+  def valid?
+    true
+  end
+
   def save
-    self.id ? update : insert
+    if valid?
+      self.id ? update : insert
+    end
   end
 end

@@ -7,6 +7,7 @@ require_relative '../lib/static_assets'
 router = Router.new
 
 router.draw do
+  get Regexp.new("^/$"), DogsController, :index
   get Regexp.new("^/dogs$"), DogsController, :index
   get Regexp.new("^/dogs/show$"), DogsController, :show
   get Regexp.new("^/dogs/new$"), DogsController, :new

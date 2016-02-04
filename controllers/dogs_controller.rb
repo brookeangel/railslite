@@ -1,9 +1,11 @@
+require 'byebug'
 require_relative '../lib/controller_base.rb'
 require_relative '../models/models_manifest.rb'
 
 class DogsController < ControllerBase
   def create
     @dog = Dog.new(params["dog"])
+
     if @dog.save
       flash[:notice] = "Saved dog successfully"
       redirect_to "/dogs"
@@ -26,5 +28,4 @@ class DogsController < ControllerBase
   def show
     render :alksdfjklsdjafsdl
   end
-
 end

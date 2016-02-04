@@ -1,0 +1,35 @@
+DROP TABLE IF EXISTS cats;
+DROP TABLE IF EXISTS humans;
+DROP TABLE IF EXISTS houses;
+
+CREATE TABLE cats (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  owner_id INTEGER,
+
+  FOREIGN KEY(owner_id) REFERENCES human(id)
+);
+
+CREATE TABLE humans (
+  id INTEGER PRIMARY KEY,
+  fname VARCHAR(255) NOT NULL,
+  lname VARCHAR(255) NOT NULL,
+  house_id INTEGER,
+
+  FOREIGN KEY(house_id) REFERENCES human(id)
+);
+
+CREATE TABLE houses (
+  id INTEGER PRIMARY KEY,
+  address VARCHAR(255) NOT NULL
+);
+
+DROP TABLE IF EXISTS dogs;
+
+CREATE TABLE dogs (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  owner_id INTEGER,
+
+  FOREIGN KEY(owner_id) REFERENCES human(id)
+);

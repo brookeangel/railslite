@@ -31,7 +31,14 @@ class ErrorHandler
   end
 
   def source_file(e)
-    abs_path = e.backtrace[0].split(":")[0]
-    contents = File.read(abs_path)
+    backtrace_line = 0
+
+    begin
+      abs_path = e.backtrace[backtrace_line].split(":")[0]
+      contents = File.read(abs_path)
+    rescue
+      backtrace_line += 1
+      retry
+    end
   end
 end
