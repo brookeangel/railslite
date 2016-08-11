@@ -1,0 +1,13 @@
+<h1><%= @bakery.name %></h1>
+
+
+<section>
+  <% @desserts.each do |dessert| %>
+    <p>
+      <img src="<%= dessert.img_url %>">
+      <%= dessert.type %>
+    </p>
+  <% end %>
+</section>
+
+<a href="/bakeries">Back to All Bakeries</a>

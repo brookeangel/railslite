@@ -1,0 +1,21 @@
+<h1>San Francisco Bakeries</h1>
+
+<% if flash[:notice] %>
+  Notice: <%= flash[:notice] %>
+<% end %>
+
+<h2>Bakeries</h2>
+<ul>
+  <% @bakeries.each do |bakery| %>
+    <li>
+      <a href=<%= "/bakeries/#{bakery.id}" %>><%= bakery.name %></a>
+      <form action="/bakeries/<%= bakery.id %>" method="POST">
+        <input type="hidden" name="form_authenticity_token" value="<%= auth_token %>">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="submit" value="Remove Bakery">
+      </form>
+    </li>
+  <% end %>
+</ul>
+
+<a href="/bakeries/new">Add Bakery</a>

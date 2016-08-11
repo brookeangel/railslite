@@ -1,22 +1,31 @@
 require 'rack'
 require_relative '../lib/router'
-require_relative '../controllers/controller_manifest.rb'
 require_relative '../lib/error_handler'
 require_relative '../lib/static_assets'
+require_relative '../lib/form_helper'
+
+Dir["controllers/*.rb"].each do |file|
+  require_relative "../" + file
+end
 
 router = Router.new
 
 router.draw do
-  get Regexp.new("^/$"), DogsController, :index
-  get Regexp.new("^/dogs$"), DogsController, :index
-  get Regexp.new("^/dogs/show$"), DogsController, :show
-  get Regexp.new("^/dogs/new$"), DogsController, :new
-  get Regexp.new("^/dogs/(?<id>\\d+)$"), DogsController, :show
-  post Regexp.new("^/dogs$"), DogsController, :create
+  get Regexp.new("^/$"), StaticPagesController, :root
+  get Regexp.new("^/miniframe_orm$"), StaticPagesController, :miniframe_orm
+  get Regexp.new("^/miniframe$"), StaticPagesController, :miniframe
+  get Regexp.new("^/bakeries$"), BakeriesController, :index
+  get Regexp.new("^/bakeries/new$"), BakeriesController, :new
+  get Regexp.new("^/bakeries/(?<id>\\d+)$"), BakeriesController, :show
+  put Regexp.new("^/bakeries/(?<id>\\d+)$"), BakeriesController, :update
+  get Regexp.new("^/bakeries/(?<id>\\d+)/edit$"), BakeriesController, :edit
+  delete Regexp.new("^/bakeries/(?<id>\\d+)$"), BakeriesController, :destroy
+  post Regexp.new("^/bakeries$"), BakeriesController, :create
+  post Regexp.new("^/desserts$"), DessertsController, :create
+  delete Regexp.new("^/desserts/(?<id>\\d+)$"), DessertsController, :destroy
 end
 
-
-railslite_app = Proc.new do |env|
+mini_frame_app = Proc.new do |env|
   req = Rack::Request.new(env)
   res = Rack::Response.new
   router.run(req, res)
@@ -26,7 +35,8 @@ end
 app = Rack::Builder.new do
   use ErrorHandler
   use Static
-  run railslite_app
+  use FormHelper
+  run mini_frame_app
 end.to_app
 
 Rack::Server.start(

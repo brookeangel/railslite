@@ -1,0 +1,37 @@
+<section class="active-record-features">
+  <h2>MiniFrame ORM</h2>
+
+  MiniFrame's ORM is built in a style similar to Rails's ActiveRecord. MiniFrame uses the Sqlite3 Ruby Gem and a hand mixed `SQLObject` base class which allows MiniFrame models to create, update, and search for items in your app's application with ease.
+
+  <h3>Dynamically Defined Setters and Getters</h3>
+  <p>
+    Models in MiniFrame map tables in your app's database. MiniFrame's ORM makes data manipulation easy by dynamically defines setter and getter methods for each column in the table.
+  </p>
+  <img src="/public/images/colnames.png">
+  <p>
+    First, it grabs the column names from the database using Sqlite3's execute2 method. From there, we use Ruby's `define_method` to define our setter and getter methods for each column. We call `#finalize!` when we initialize instances of `SQLObject`.
+  </p>
+  <p>
+    Notice that all of our attributes are stored in an attributes hash rather for easy access.
+  </p>
+  <img src="/public/images/finalize.png">
+  <h3>Initializing Model Base</h3>
+  <p>
+    After calling the `#finalize!` method to get setters and getters arranged, the `SQLObject` base class takes in a hash of attributes and sets each of them in the attributes hash.
+  </p>
+  <img src="/public/images/initialize.png">
+  <h3>Searching</h3>
+  <p>
+    Like `ActiveRecord::Base`, our `SQLObject` contains useful searching capabilities. We assure dry code by keeping our searching functionality in a `Searchable` module which we later include in our base class.
+  </p>
+  <img src="/public/images/searchable.png">
+  <p>
+    We also provide fun dynamic finders like ActiveRecord so that you can `find_by` any number of attributes!
+  </p>
+  <img src="/public/images/methodmissing.png">
+  <h3>Saving</h3>
+  <p>
+    Last but not least, the `SQLObject` provides functionality for saving records to the database. Below is a snippet from the `#update` method. The `set_line` is gathered from the model's attributes hash and interpolates the `attribute_values` using a `?`s for interpolation to purfiy potentially dangerous values before they are inserted into the database.
+  </p>
+  <img src="/public/images/update.png">
+</section>

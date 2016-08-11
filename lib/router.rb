@@ -18,8 +18,11 @@ class Route
   # instantiate controller and call controller action
 
   def run(req, res)
-    match_data = pattern.match(req.fullpath) # This creates a hash-like object of matches
-    route_params = {} # Here we put it into a real hash
+    # This creates a hash-like object of matches
+    match_data = pattern.match(req.fullpath)
+    
+    # Here we put it into a real hash
+    route_params = {}
 
     match_data.names.each do |name|
       route_params[name] = match_data[name]

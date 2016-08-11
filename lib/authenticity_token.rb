@@ -6,24 +6,17 @@ class AuthenticityToken
 
   def initialize(req)
     @name = "_rails_lite_auth_token"
-    cookie = req.cookies[name]
-    @now = cookie.nil? ? {} : JSON.parse(req.cookies[name])
-    @later = {}
-  end
-
-  def correct_token?(submitted_token)
-    submitted_token == @now['form_authenticity_token']
+    @data = {}
   end
 
   def form_authenticity_token
-    @later["form_authenticity_token"] ||= SecureRandom::urlsafe_base64(16)
+    @data["form_authenticity_token"] ||= SecureRandom::urlsafe_base64(16)
   end
 
   def save_token(res)
     new_cookie = {}
     new_cookie[:path] ||= "/"
-    new_cookie[:value] = @later.to_json
+    new_cookie[:value] = @data.to_json
     res.set_cookie(name, new_cookie)
   end
-
 end

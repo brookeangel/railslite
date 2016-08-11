@@ -1,0 +1,90 @@
+<section class="mini-frame-features">
+  <h2>Miniframe Framework</h2>
+
+  Miniframe follows a Rails-esque MVC architectural pattern. Incoming requests are passed to the router, which, if it finds a matching routes, initializes the proper controller and runs a controller action. Each controller action is responsible for rendering back the desired content, and can dynamically fill templates by fetching records from the database.
+
+  <h3>Miniframe Router</h3>
+  <img src="/public/images/router.png">
+
+  <p>
+    In its simplest form, a Rack app is something that responds to the `#call` method. Here, our basic Miniframe app is a proc that takes in the `env` hash, wraps it in a `Rack::Request` object, and calls upon the `Router` to run.
+  </p>
+
+  <img src="/public/images/routes.png">
+
+  <p>
+    Much like the Rails Router, our Miniframe router allows for simple route definitions using the `Router#draw` method. The first route depicted above looks for an HTTP GET request to a path matching "/". If this path is matched, the Router will work its magic and initialize an instance of the `StaticPagesController` and call the `#root` method on it, which takes care of rendering the appropriate content in the response.
+  </p>
+  <p>
+    Our Router can also match paths with params as such:
+    `get Regexp.new("^/bakeries/(?<id>\\d+)$"), BakeriesController, :show`.
+    In this example, we will capture a group of digits following `/bakeries/`. We use regular expressions to draw out the params and pass them to controller instance.
+  </p>
+
+  <h3>ControllerBase</h3>
+  <p>
+    Our `ControllerBase` class is responsible for writing the correct content to the response. In controllers that inherit from controller base, we define actions such as `#index` or `#update`. Within these methods, we have access to the `ControllerBase` methods for `render`ing a template or triggering a `redirect_to` another path. In both cases, we prevent a double render by setting an instance variable indicating that we have `already_built_response` and raising an error if we have.
+  </p>
+  <p>
+    In our `redirect_to` method, we simply set a status code of 302 in our response as such: `res.redirect(url, status = 302)`. Our `redirect` method is a little more complicated.
+  </p>
+  <img src="/public/images/render.png">
+  <p>
+    When we render a template, we grab the template from the `/views` folder and read in its contents. Our templates can contain ERB, allowing us to dynamically generate content. We wrap our template content in the `ERB` class and evaluate it using `binding` which captures the context available to us in our controller. As in Rails, this allows us to use controller variables in our templates. Once we've evaluated the template, we can also render it into a layout, allowing us to share content across a variety of views in a dry manner. Lastly, with our content set up, we call our `#render_content` method which sets the content type and writes the body of our response. Voila! Fresh baked content, courtesy of `ControllerBase`.
+  </p>
+
+  <h3>Cookies</h3>
+
+  <p>
+    What would a framework be without some tasty cookies? Miniframe uses cookies to allow for `sessions`, `flash`, and `form_authenticity_token`, three important features implemented by Rails.
+  </p>
+  <h4>Session</h4>
+  <p>
+    The `session` and `flash` features are rather similar; both are implemented as classes that keep track of a values hash. In the `Session` class, we take in a request and begin by looking for a `_rails_lite_app` cookie. If such a cookie exists, we parse it and save it as an instance variable. Otherwise, we begin with an empty hash which will later be saved to our cookies. From there, we provide `[]` and `[]=` methods allowing users to read from the session hash or store values for later. Lastly, we provide a `#store_session` method which takes in a response and writes the cookie to the response.
+  </p>
+  <p>
+    How does this integrate with our `ControllerBase`? In `ControllerBase`, we provide a `#session` method. `#session` lazy evaluates a `@session` instance varaible in the controller, creating a new `Session` if one does not yet exist. From there, we can use session to store information that we'd like to persist through multiple request response cycles but don't wish to save to our database. At the end of our `render` and `redirect_to` methods, we now call `session#store_session` to make sure that our updated cookie saves to the response.
+  </p>
+  <h4>Flash</h4>
+  <p>
+    `Flash` works similarly, but only saves for one request response cycle. Like Rails, we also implement a `Flash#now` functionality, which only persists for the current request response cycle. We achieve flash with a simple trick: whatever we read from our `_rails_lite_flash_cookie` has come from the previous request response cycle. We thus know that it should not persist to on to the next cycle and thus should not be saved back to the cookie. We establish a separate hash for `flash` which will be saved to the cookie for the next cycle.
+  </p>
+  <img src="/public/images/flash-i.png">
+  <img src="/public/images/flash-ii.png">
+  <p>
+    The usage of flash in the `ControllerBase` is similar to the usage of session. Calling `#flash` lazy initializes an instance of flash. The user can then index into either `flash` or `flash.now` using `[]` and `[]=` methods that we've provided. At the end of `render` and `redirect_to`, we make sure to call `store_flash` to assure that we store the flash data to the cookie.
+  </p>
+  <h4>Form Authenticity Token</h4>
+  <p>
+    The form authenticity token is a means of preventing CSRF attacks. To protect against third party POST/PUT/DELETE requests, Rails provides the `protect_from_forgery` method for the ControllerBase. This method requires that all non-get requests submitted to a controller check an authenticity submitted with the cookie with an authenticity token submitted through the form.
+  </p>
+  <img src="public/images/auth_token.png">
+  <p>
+    Similar to flash and session, calling `form_authenticity_token` from our controller lazy creates an instance of the `AuthenticityToken` class. In addition, however, `form_authenticity_token` returns the token itself so that it can be submitted through the form as well as through the cookie.
+  </p>
+  <h3>Middleware</h3>
+
+  <p>
+    What would Rails be without its fancy middleware? Very little at all! Using `Rack::Builder`, we've given Miniframe the ability to handle middleware as well!
+  </p>
+  <img src="/public/images/rack-builder.png">
+  <p>
+    Here we bring in `ErrorHandler`, `Static`, and `FormHelper`, three custom-built middlewares that make our Miniframe apps exciting and easy to use!
+  </p>
+  <p>
+    First up, `ErrorHandler`. Like its other middleware peers, `ErrorHandler` is simply a class that takes in `app` and responds to the `#call` method with `env`.
+  </p>
+  <img src="/public/images/error-handler.png">
+  <p>
+    Our `ErrorHandler` wraps our entire App's call in a `begin`/`rescue` block. If anything in our App fails, `ErrorHander` saves the day by rendering a special error template that displays a the stacktrace along with some helpful error messages.
+  </p>
+  <p>
+    Next up, let's discuss `Static`. `Static` is a middleware for serving up static assets. In our `Static` class, we take in a request and check if we are making a request for a resource in our our static assets directory (we've set this to `public` by Rails convention). If the asset is located in the `public` directory, we pass it over to `FilerServer`, our helper class, which either locates the file and writes it to the response as well as its corresponding MIME type, or sends back a 404 resource not found error. If the path does not point to the `public` directory, we assume that we are not serving up a static asset and simply call the next middleware in the stack.
+  </p>
+  <p>
+    Finally, let's discuss our `FormHelper` middleware. This simple middleware allows our app to handle PATCH and DELETE requests. Since HTML forms are incapable of handling PATCH and DELETE, we instead indicate to our app that we'd like to perform a PATCH or DELETE request using a hidden input named `_method` in our forms. The `FormHelper` checks for the presence of the `_method` param and alters the request method if needed.
+  </p>
+  <p>
+    Together, our middlewares make using our framework a simpler and more cohesive experience. `Rack::Builder` allows us to add more middlewares with ease.
+  </p>
+</section>

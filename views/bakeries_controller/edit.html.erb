@@ -1,0 +1,25 @@
+<% if flash[:errors] %>
+  <% flash[:errors].each do |error| %>
+    <%= error %>
+  <% end %>
+<% end %>
+
+<h1>Update Bakery Form</h1>
+
+<form action="/bakeries/<%= @bakery.id %>" method="POST">
+  <label>Super Secret Auth Token
+    <input type="text" name="form_authenticity_token" value="<%= auth_token %>">
+  </label>
+
+  <input type="hidden" name="_method" value="PUT">
+
+  <label>Name
+    <input type="text" name="bakery[name]" value="<%= @bakery.name %>">
+  </label>
+
+  <label>Location
+    <input type="text" name="bakery[location]" value="<%= @bakery.location %>">
+  </label>
+
+  <input type="submit">
+</form>

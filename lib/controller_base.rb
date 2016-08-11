@@ -1,3 +1,4 @@
+Dir["../models/*.rb"].each { |file| require file }
 require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/inflector'
@@ -48,11 +49,12 @@ class ControllerBase
     file_name = File.join(
       dir_path, "..", "views",
       self.class.to_s.underscore, "#{template_name}.html.erb"
-      )
+    )
     contents = File.read(file_name)
-    template = ERB.new(contents) #Create an erb template
-    evaluated_template = template.result(binding) #Evaluate in context of controller instance vars
-    render_content(evaluated_template, 'text/html')
+    template = ERB.new(contents)
+    evaluated_template = template.result(binding)
+    template_in_layout = render_into_layout(evaluated_template)
+    render_content(template_in_layout, 'text/html')
   end
 
   def session
@@ -71,8 +73,10 @@ class ControllerBase
   end
 
   def invoke_action(name)
-    self.send(name) #this will invoke the action for the current controller instance
-    render(name) unless already_built_response? #if they don't render we render implicitly
+    self.send(name)
+    # this will invoke the action for the current controller instance
+    render(name) unless already_built_response?
+    # if they don't render we render implicitly
   end
 
   private
@@ -83,11 +87,24 @@ class ControllerBase
   end
 
   def authenticate(req, res, route_params)
+
     return unless req.post? || req.patch?
     cookie = JSON.parse(req.cookies["_rails_lite_auth_token"])
     if !cookie || cookie["form_authenticity_token"] != req.params["form_authenticity_token"]
       raise "You do not have access."
     end
+  end
+
+  def render_into_layout(yield_content)
+    dir_path = File.dirname(__FILE__)
+    file_name = File.join(
+      dir_path, "..", "views",
+      "layouts", "application.html.erb"
+    )
+
+    contents = File.read(file_name)
+    template = ERB.new(contents)
+    evaluated_template = template.result(binding)
   end
 
 end

@@ -1,3 +1,4 @@
+require 'byebug'
 require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/inflector'
@@ -30,19 +31,14 @@ class Static
   def can_serve?(path)
     path.index("/#{root}")
   end
-
-  def fetch_static_asset(path)
-    requested_file = requested_file
-    content_type = nil
-    ['200', { 'Content-Type' => content_type }, []]
-  end
-
 end
 
 class FileServer
   MIME_TYPES = {
     '.txt' => 'text/plain',
     '.jpg' => 'image/jpeg',
+    '.jpeg' => 'image/jpeg',
+    '.png' => 'image/png',
     '.zip' => 'application/zip',
     '.css' => 'text/css',
     '.js' => 'text/javascript'
