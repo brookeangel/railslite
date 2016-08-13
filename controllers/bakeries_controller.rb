@@ -1,3 +1,4 @@
+require 'byebug'
 require_relative '../lib/controller_base.rb'
 
 class BakeriesController < ControllerBase
@@ -30,13 +31,12 @@ class BakeriesController < ControllerBase
 
   def update
     @bakery = Bakery.find(params["id"])
-
     if @bakery.update(params["bakery"])
       flash[:notice] = "Bakery updated!"
       redirect_to "/bakeries/#{@bakery.id}"
     else
       flash.now[:errors] = @bakery.errors
-      render :new
+      render :edit
     end
   end
 

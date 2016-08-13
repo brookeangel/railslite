@@ -1,13 +1,51 @@
-<h1><%= @bakery.name %></h1>
-
-
-<section>
-  <% @desserts.each do |dessert| %>
+<div class="show-page">
+    <% if flash[:notice] %>
+      <p class="notice"><%= flash[:notice].join(", ") %></p>
+    <% elsif flash[:errors] %>
+      <p class="errors"><%= flash[:errors].join(", ") %></p>
+    <% end %>
+  <h1><%= @bakery.name %></h1>
+  <div>
+    <form class="delete-form" action="/bakeries/<%= @bakery.id %>" method="POST">
+      <input type="hidden" name="form_authenticity_token" value="<%= auth_token %>">
+      <input type="hidden" name="_method" value="DELETE">
+      <input type="submit" value="Remove Bakery">
+    </form>
+    <div class="show-nav"><a href="/bakeries/<%= @bakery.id %>/edit">Edit Bakery</a></div>
+    <div class="show-nav"><a href="/bakeries">Back to All Bakeries</a></div>
+  </div>
+  <div>
     <p>
-      <img src="<%= dessert.img_url %>">
-      <%= dessert.type %>
+      Welcome to the <%= @bakery.name %> bakery show page! We got here by making a GET request to a url matching this regular expression: "^/bakeries/(?<id>\\d+)$". We extracted the 'id' param in our Route and passed it over the controller, who found the corresponding bakery in the database.
     </p>
-  <% end %>
-</section>
-
-<a href="/bakeries">Back to All Bakeries</a>
+    <p>
+      Careful with that remove button, it'll make a DELETE request and remove bakery from the database for good! And we wouldn't want <%= @bakery.name %> to be removed from the database, would we?
+    </p>
+    <p>
+      This page also showcases one of our association - we've defined a one to many association between Bakeries and Desserts using our ORM's model base - a bakery `has_many :desserts`! When we call `#desserts` on a bakery instance, we pull up all of it's associated dessert items from the database.
+    </p>
+  </div>
+  <h2>Menu</h2>
+  <section class="feature-box">
+    <% @desserts.each do |dessert| %>
+      <div style="background-image: url('<%= dessert.img_url %>')">
+        <p>
+          <%= dessert.type %>
+        </p>
+      </div>
+    <% end %>
+  </section>
+  <h2>Add a Dessert to <%= @bakery.name %></h2>
+  <p>
+    This form makes a POST request to '/desserts', adding a new delicious dessert that is associated with <%= @bakery.name %>. If you input a valid dessert, it should appear along with a `flash[:notice]` that your request has succeeded. Otherwise, the dessert will not persist and a `flash[:error]` will appear. Try it out!
+  </p>
+  <div class="form-holder">
+    <form class="dessert-form" action="/desserts" method="POST">
+      <input type="hidden" name="form_authenticity_token" value="<%= auth_token %>">
+      <input type="hidden" name="dessert[bakery_id]" value="<%= @bakery.id %>">
+      <input type="text" name="dessert[type]" placeholder="Dessert Type">
+      <input type="text" name="dessert[img_url]" placeholder="Image Url">
+      <input type="submit" value="Add Dessert">
+    </form>
+  </div>
+</div>

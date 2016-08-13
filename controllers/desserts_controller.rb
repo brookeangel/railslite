@@ -7,19 +7,18 @@ class DessertsController < ControllerBase
     @dessert = Dessert.new(params["dessert"])
 
     if @dessert.save
-      flash[:notice] = "New dessert added!"
-      redirect_to "/bakery/#{@dessert.bakery_id}"
+      flash[:notice] = ["New dessert added!"]
     else
-      flash.now[:errors] = @dessert.errors
-      render :new
+      flash[:errors] = @dessert.errors
     end
+    redirect_to "/bakeries/#{@dessert.bakery_id}"
   end
 
   def destroy
     @dessert = Dessert.find(params["id"])
 
     @desserts.destroy
-    redirect_to "/bakery/#{@dessert.bakery_id}"
+    redirect_to "/bakeries/#{@dessert.bakery_id}"
   end
 
 end

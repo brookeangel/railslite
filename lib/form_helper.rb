@@ -9,8 +9,14 @@ class FormHelper
   def call(env)
     req = Rack::Request.new(env)
 
-    if req["_method"] && ["patch", "delete", "put"].include?(req["_method"].downcase)
-      req.env["REQUEST_METHOD"] = req["_method"].upcase
+    if req["_method"] &&
+      if req["_method"]
+        if req["_method"].upcase == "DELETE"
+          req.env["REQUEST_METHOD"] = req["_method"].upcase
+        elsif ["PATCH", "PUT"].include?(req["_method"].upcase)
+          req.env["REQUEST_METHOD"] = "PUT"
+        end
+      end
     end
 
     app.call(env)

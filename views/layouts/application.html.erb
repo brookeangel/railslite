@@ -3,13 +3,26 @@
   <head>
     <meta charset="utf-8">
     <title>MiniFrame Bakery</title>
-    <link href='https://fonts.googleapis.com/css?family=Pacifico|Crimson+Text' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="public/fonts/font-awesome-4.6.3/css/font-awesome.min.css"> -->
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="public/css/styles.css" />
   </head>
   <body>
     <nav class="top-nav">
       <a href="/"><div class="logo"></div></a>
-      <p><a href="/bakeries">Bake up some resources!</a></p>
+      <p>
+        <a href="/bakeries">Bake up some resources!</a>
+        <a href="/">
+          <i class="fa fa-home fa-2x"></i>
+        </a>
+        <a href="https://github.com/brookeangel/railslite" target="_blank">
+          <i class="fa fa-github fa-2x"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/brookeangel">
+          <i class="fa fa-linkedin fa-2x"></i>
+        </a>
+      </p>
     </nav>
     <main>
       <%= yield_content %>

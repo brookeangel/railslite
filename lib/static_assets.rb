@@ -34,6 +34,8 @@ class Static
 end
 
 class FileServer
+  attr_reader :root
+
   MIME_TYPES = {
     '.txt' => 'text/plain',
     '.jpg' => 'image/jpeg',
@@ -73,6 +75,7 @@ class FileServer
   def file_name(env)
     req = Rack::Request.new(env)
     path = req.path
+    path = path[path.index("/#{root}")..-1]
     dir = File.dirname(__FILE__)
     File.join(dir, "..", path)
   end

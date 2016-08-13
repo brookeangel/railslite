@@ -1,25 +1,36 @@
-<% if flash[:errors] %>
-  <% flash[:errors].each do |error| %>
-    <%= error %>
+<div class="new-page">
+  <% if flash[:errors] %>
+    <p class="errors"><%= flash[:errors].join(", ") %></p>
   <% end %>
-<% end %>
 
-<h1>Update Bakery Form</h1>
+  <h1>Edit Bakery Form</h1>
+  <p>
+    This form makes a PATCH request to '/bakeries/<%= @bakery.id %>', updating a bakery.
+    Because HTML forms are incapable of handling PATCH requests, we handle the with a hand-baked middleware
+    that alters the request's method.
+  </p>
+  <p>
+    Try updating the bakery!
+  </p>
 
-<form action="/bakeries/<%= @bakery.id %>" method="POST">
-  <label>Super Secret Auth Token
-    <input type="text" name="form_authenticity_token" value="<%= auth_token %>">
-  </label>
+  <div class="form-holder">
+    <form class="dessert-form" action="/bakeries/<%= @bakery.id %>" method="POST">
+      <label>Super Secret Auth Token
+        <input type="text" name="form_authenticity_token" value="<%= auth_token %>">
+      </label>
+      <label>Change Form Method
+        <input type="text" name="_method" value="PATCH">
+      </label>
+      <input type="text" name="bakery[name]"
+        placeholder="Name" value="<%= @bakery.name %>">
 
-  <input type="hidden" name="_method" value="PUT">
+      <input type="text" name="bakery[img_url]"
+        placeholder="Image Url" value="<%= @bakery.img_url %>">
 
-  <label>Name
-    <input type="text" name="bakery[name]" value="<%= @bakery.name %>">
-  </label>
+      <input type="text" name="bakery[location]"
+        placeholder="Location" value="<%= @bakery.location %>">
 
-  <label>Location
-    <input type="text" name="bakery[location]" value="<%= @bakery.location %>">
-  </label>
-
-  <input type="submit">
-</form>
+      <input type="submit">
+    </form>
+  </div>
+</div>

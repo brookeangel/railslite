@@ -4,7 +4,8 @@ DROP TABLE IF EXISTS desserts;
 CREATE TABLE bakeries (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  location VARCHAR(255) NOT NULL
+  location VARCHAR(255) NOT NULL,
+  img_url VARCHAR(255)
 );
 
 CREATE TABLE desserts (

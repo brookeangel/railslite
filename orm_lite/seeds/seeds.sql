@@ -1,11 +1,11 @@
 INSERT INTO
-  bakeries (id, name, location)
+  bakeries (id, name, location, img_url)
 VALUES
-  (1, "Tartine", "The Mission"),
-  (2, "Arizmendi", "Inner Sunset"),
-  (3, "Cheeseboard", "Berkeley"),
-  (4, "The Mill", "The Mission"),
-  (5, "Twisted Donuts", "Outer Sunset");
+  (1, "Tartine", "The Mission", "https://static01.nyt.com/images/2014/04/23/dining/23TARTINE2/23TARTINE2-superJumbo.jpg"),
+  (2, "Arizmendi", "Inner Sunset", "http://slice.seriouseats.com/images/2012/02/20120227-arizmendi-pasilla-pepper-queso-fresco-pizza-cc.jpg.jpg"),
+  (3, "Cheeseboard", "Berkeley", "http://www.berkeleyside.com/wp-content/uploads/2011/06/side.06.03.11.jpg"),
+  (4, "The Mill", "The Mission", "http://ericherrmann.com/news/wp-content/uploads/2013/02/ericherrmann_themillsf_23.jpg"),
+  (5, "Twisted Donuts", "Outer Sunset", "https://cdn0.vox-cdn.com/thumbor/dGv_5B6i6H06AsJvqea8wZTA6Gg=/0x0:599x337/1310x737/cdn0.vox-cdn.com/uploads/chorus_image/image/39688076/twisted_donuts.0.0.jpg");
 
 INSERT INTO
   desserts (id, type, img_url, bakery_id)

@@ -1,21 +1,33 @@
-<h1>San Francisco Bakeries</h1>
+<h1>Bakeries Index</h1>
 
+<p>
+  Welcome to the bakeries index! "How exactly did we get here?", you may ask.
+</p>
+<p>
+  Back in our router, we defined a route that would match a GET request to the '/bakeries' path. We told the route that when the time came, it should initialize an instance of the `BakeriesController` and invoke the `#index` action. When you made the request by navigating to '/bakeries' in your browser, the controller sprung to life and got to work!
+</p>
+<p>
+  The index action of our controller did a few things. First, it used Miniframe ORM to grab all the bakeries from the bakeries table of our Sqlite3 database and save them as an array of `Bakery` objects.
+</p>
+<p>
+  It was then told to render the index template, so it looked into the `views/bakeries_controller` folder and grabbed the template. We then wrote the evaluated template to our response.
+</p>
+<p>
+  Try visiting some bakeries below or adding a new bakery to the list!
+</p>
 <% if flash[:notice] %>
   Notice: <%= flash[:notice] %>
 <% end %>
 
-<h2>Bakeries</h2>
-<ul>
-  <% @bakeries.each do |bakery| %>
-    <li>
-      <a href=<%= "/bakeries/#{bakery.id}" %>><%= bakery.name %></a>
-      <form action="/bakeries/<%= bakery.id %>" method="POST">
-        <input type="hidden" name="form_authenticity_token" value="<%= auth_token %>">
-        <input type="hidden" name="_method" value="DELETE">
-        <input type="submit" value="Remove Bakery">
-      </form>
-    </li>
-  <% end %>
-</ul>
-
-<a href="/bakeries/new">Add Bakery</a>
+<h3 class="new-bakery"><a href="/bakeries/new"><i class="fa fa-plus fa-lg"></i> Add Bakery</a></h3>
+  <div class="feature-box">
+    <% @bakeries.each do |bakery| %>
+      <a href=<%= "/bakeries/#{bakery.id}" %>>
+        <div style="background-image: url('<%= bakery.img_url %>')">
+          <p>
+            <%= bakery.name %>
+          </p>
+        </div>
+      </a>
+    <% end %>
+  </div>

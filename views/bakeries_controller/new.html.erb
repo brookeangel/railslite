@@ -1,23 +1,35 @@
-<% if flash[:errors] %>
-  <% flash[:errors].each do |error| %>
-    <%= error %>
+<div class="new-page">
+  <% if flash[:errors] %>
+    <p class="errors"><%= flash[:errors].join(", ") %></p>
   <% end %>
-<% end %>
 
-<h1>New Bakery Form</h1>
+  <h1>New Bakery Form</h1>
+  <p>
+    This form makes a POST request to '/bakeries', adding a new bakery. If you input an invalid bakery, the bakery will not persist and a `flash[:error]` will appear.
+  </p>
+  <p>
+    Notice the "super secret" auth token. This is to prevent CSRF attacks! We submit one copy in the form and one copy in our cookies. When the server detects a POST request, it cross validates the auth token copies to assure that the request has come from our site. What happens if we alter the token before submitting the form?
+  </p>
+  <p>
+    Try adding a bakery!
+  </p>
 
-<form action="/bakeries" method="POST">
-  <label>Super Secret Auth Token
-    <input type="text" name="form_authenticity_token" value="<%= auth_token %>">
-  </label>
+  <div class="form-holder">
+    <form class="dessert-form" action="/bakeries" method="POST">
+      <label>Super Secret Auth Token
+        <input type="text" name="form_authenticity_token" value="<%= auth_token %>">
+      </label>
 
-  <label>Name
-    <input type="text" name="bakery[name]" value="<%= @bakery.name %>">
-  </label>
+      <input type="text" name="bakery[name]"
+        placeholder="Name" value="<%= @bakery.name %>">
 
-  <label>Location
-    <input type="text" name="bakery[location]" value="<%= @bakery.location %>">
-  </label>
+      <input type="text" name="bakery[img_url]"
+        placeholder="Image Url" value="<%= @bakery.img_url %>">
 
-  <input type="submit">
-</form>
+      <input type="text" name="bakery[location]"
+        placeholder="Location" value="<%= @bakery.location %>">
+
+      <input type="submit">
+    </form>
+  </div>
+</div>

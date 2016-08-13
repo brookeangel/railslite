@@ -1,13 +1,23 @@
 <section class="mini-frame-features">
   <h2>Miniframe Framework</h2>
-
-  Miniframe follows a Rails-esque MVC architectural pattern. Incoming requests are passed to the router, which, if it finds a matching routes, initializes the proper controller and runs a controller action. Each controller action is responsible for rendering back the desired content, and can dynamically fill templates by fetching records from the database.
-
-  <h3>Miniframe Router</h3>
+  <p>
+    Miniframe follows a Rails-esque MVC architectural pattern.
+    Incoming requests are passed to the router, which, if it finds a matching routes, initializes the proper controller and runs a controller action. Each controller action is responsible for rendering back the desired content, and can dynamically fill templates by fetching records from the database.
+    Read on to learn more about Miniframe's features.
+  </p>
+  <h3>Navigate</h3>
+  <ul>
+    <li><a href="#router">Miniframe Router</a></li>
+    <li><a href="#controller">Controller Base</a></li>
+    <li><a href="#cookies">Cookies</a></li>
+    <li><a href="#middleware">Middleware</a></li>
+  </ul>
+  <h3 id="router">Miniframe Router</h3>
   <img src="/public/images/router.png">
 
   <p>
-    In its simplest form, a Rack app is something that responds to the `#call` method. Here, our basic Miniframe app is a proc that takes in the `env` hash, wraps it in a `Rack::Request` object, and calls upon the `Router` to run.
+    In its simplest form, a Rack app is something that responds to the `#call` method.
+    Here, our basic Miniframe app is a proc that takes in the `env` hash, wraps it in a `Rack::Request` object, and calls upon the `Router` to run.
   </p>
 
   <img src="/public/images/routes.png">
@@ -21,7 +31,7 @@
     In this example, we will capture a group of digits following `/bakeries/`. We use regular expressions to draw out the params and pass them to controller instance.
   </p>
 
-  <h3>ControllerBase</h3>
+  <h3 id="controller">ControllerBase</h3>
   <p>
     Our `ControllerBase` class is responsible for writing the correct content to the response. In controllers that inherit from controller base, we define actions such as `#index` or `#update`. Within these methods, we have access to the `ControllerBase` methods for `render`ing a template or triggering a `redirect_to` another path. In both cases, we prevent a double render by setting an instance variable indicating that we have `already_built_response` and raising an error if we have.
   </p>
@@ -33,7 +43,7 @@
     When we render a template, we grab the template from the `/views` folder and read in its contents. Our templates can contain ERB, allowing us to dynamically generate content. We wrap our template content in the `ERB` class and evaluate it using `binding` which captures the context available to us in our controller. As in Rails, this allows us to use controller variables in our templates. Once we've evaluated the template, we can also render it into a layout, allowing us to share content across a variety of views in a dry manner. Lastly, with our content set up, we call our `#render_content` method which sets the content type and writes the body of our response. Voila! Fresh baked content, courtesy of `ControllerBase`.
   </p>
 
-  <h3>Cookies</h3>
+  <h3 id="cookies">Cookies</h3>
 
   <p>
     What would a framework be without some tasty cookies? Miniframe uses cookies to allow for `sessions`, `flash`, and `form_authenticity_token`, three important features implemented by Rails.
@@ -62,7 +72,7 @@
   <p>
     Similar to flash and session, calling `form_authenticity_token` from our controller lazy creates an instance of the `AuthenticityToken` class. In addition, however, `form_authenticity_token` returns the token itself so that it can be submitted through the form as well as through the cookie.
   </p>
-  <h3>Middleware</h3>
+  <h3 id="middleware">Middleware</h3>
 
   <p>
     What would Rails be without its fancy middleware? Very little at all! Using `Rack::Builder`, we've given Miniframe the ability to handle middleware as well!
