@@ -9,11 +9,7 @@ class SQLObject
   extend Associatable
 
   def self.columns
-    @cols ||= DBConnection.execute2(<<-SQL).first.map(&:to_sym)
-      SELECT *
-      FROM #{table_name}
-      LIMIT 0
-    SQL
+    @cols ||= DBConnection.col_names(table_name).map(&:to_sym)
   end
 
   def self.finalize!
@@ -48,10 +44,10 @@ class SQLObject
   def self.find(id)
     id = id.to_i
 
-    data = DBConnection.execute(<<-SQL, id)
+    data = DBConnection.execute(<<-SQL, [id])
       SELECT *
       FROM #{table_name}
-      WHERE id = ?
+      WHERE id = $1
     SQL
 
     data.empty? ? nil : self.new(data.first)
@@ -64,7 +60,7 @@ class SQLObject
       unless self.class.columns.include?(key.to_sym)
         raise "unknown attribute '#{key}'"
       end
-      
+
       self.send("#{key}=", val)
     end
   end
@@ -80,16 +76,21 @@ class SQLObject
   def insert
     columns = self.class.columns.drop(1)
     col_names = columns.map(&:to_s).join(", ")
-    question_marks = (["?"] * columns.count).join(", ")
+    param_syms = []
 
-    DBConnection.execute(<<-SQL, *attribute_values.drop(1))
+    columns.count.times do |i|
+      param_syms << "$#{i + 1}"
+    end
+
+    obj = DBConnection.execute(<<-SQL, attribute_values.drop(1))
       INSERT INTO
         #{self.class.table_name} (#{col_names})
       VALUES
-        (#{question_marks})
+        (#{param_syms.join(", ")})
+      RETURNING
+        *
     SQL
-
-    self.id = DBConnection.last_insert_row_id
+    self.id = obj[0]['id']
   end
 
   def update(new_attrs = {})
@@ -98,16 +99,17 @@ class SQLObject
       self.send("#{k}=", v)
     end
 
+    num_cols = self.class.columns.count
     set_line = self.class.columns
-      .map { |attr| "#{attr} = ?" }.join(", ")
+      .map.with_index { |attr, idx| "#{attr} = $#{idx + 1}" }.join(", ")
 
-    DBConnection.execute(<<-SQL, *attribute_values, id)
+    DBConnection.execute(<<-SQL, [*attribute_values, id])
       UPDATE
         #{self.class.table_name}
       SET
         #{set_line}
       WHERE
-        #{self.class.table_name}.id = ?
+        #{self.class.table_name}.id = $#{num_cols + 1}
     SQL
 
     return true if valid?
@@ -124,11 +126,11 @@ class SQLObject
   end
 
   def destroy
-    DBConnection.execute(<<-SQL, id)
+    DBConnection.execute(<<-SQL, [id])
       DELETE FROM
         #{self.class.table_name}
       WHERE
-        #{self.class.table_name}.id = ?
+        #{self.class.table_name}.id = $1
     SQL
   end
 end

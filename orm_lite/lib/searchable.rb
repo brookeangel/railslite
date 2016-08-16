@@ -1,8 +1,10 @@
 module Searchable
   def where(params)
-    where_line = params.keys.map { |key| "#{key} = ?" }.join(" AND ")
+    where_line = params.keys
+                      .map.with_index { |key, i| "#{key} = $#{i + 1}" }
+                      .join(" AND ")
 
-    data = DBConnection.execute(<<-SQL, *params.values)
+    data = DBConnection.execute(<<-SQL, params.values)
       SELECT
         *
       FROM

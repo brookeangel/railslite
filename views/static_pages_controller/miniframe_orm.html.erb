@@ -2,7 +2,7 @@
   <h2>MiniFrame ORM</h2>
 
   <p>
-    MiniFrame's ORM is built in a style similar to Rails's ActiveRecord. MiniFrame uses the Sqlite3 Ruby Gem and a hand mixed `SQLObject` base class which allows MiniFrame models to create, update, and search for items in your app's application with ease.
+    MiniFrame's ORM is built in a style similar to ActiveRecord. MiniFrame uses the 'pg' Ruby Gem and a hand mixed `SQLObject` base class which allows MiniFrame models to create, update, and search for items in your app's application with ease.
   </p>
 
   <h3>Navigate</h3>
@@ -18,7 +18,7 @@
   </p>
   <img src="/public/images/colnames.png">
   <p>
-    First, it grabs the column names from the database using Sqlite3's execute2 method. From there, we use Ruby's `define_method` to define our setter and getter methods for each column. We call `#finalize!` when we initialize instances of `SQLObject`.
+    First, it grabs the column names from the database using PG::Conection's exec_params method. From there, we use Ruby's `define_method` to define our setter and getter methods for each column. We call `#finalize!` when we initialize instances of `SQLObject`.
   </p>
   <p>
     Notice that all of our attributes are stored in an attributes hash rather for easy access.

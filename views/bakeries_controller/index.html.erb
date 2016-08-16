@@ -7,7 +7,7 @@
   Back in our router, we defined a route that would match a GET request to the '/bakeries' path. We told the route that when the time came, it should initialize an instance of the `BakeriesController` and invoke the `#index` action. When you made the request by navigating to '/bakeries' in your browser, the controller sprung to life and got to work!
 </p>
 <p>
-  The index action of our controller did a few things. First, it used Miniframe ORM to grab all the bakeries from the bakeries table of our Sqlite3 database and save them as an array of `Bakery` objects.
+  The index action of our controller did a few things. First, it used Miniframe ORM to grab all the bakeries from the bakeries table of our database and save them as an array of `Bakery` objects.
 </p>
 <p>
   It was then told to render the index template, so it looked into the `views/bakeries_controller` folder and grabbed the template. We then wrote the evaluated template to our response.
