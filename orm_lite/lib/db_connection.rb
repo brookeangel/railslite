@@ -5,10 +5,11 @@ require 'yaml'
 # https://tomafro.net/2010/01/tip-relative-paths-with-file-expand-path
 ROOT_FOLDER = File.dirname(__FILE__)
 DB_NAME = YAML.load_file(File.join(ROOT_FOLDER, '..', 'config.yml'))['dbname']
-
 class DBConnection
   def self.open(config = {})
-    @db = PG::Connection.open(dbname: DB_NAME)
+    uri = URI.parse(ENV['DATABASE_URL'])
+    @db = PG.connect(uri.hostname, uri.port, nil, nil, uri.path[1..-1], uri.user, uri.password)
+
     @db
   end
 
